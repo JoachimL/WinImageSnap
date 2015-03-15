@@ -11,7 +11,8 @@ namespace WinImageSnap
             {
                 MaxSleepTime = options.MaxWaitTime,
                 RepositoryName = options.RepositoryName,
-                OutputFolder = options.OutputFolder
+                OutputFolder = options.OutputFolder,
+                Verbose = options.Verbose
             }).Snap();
         }
     }
@@ -28,8 +29,12 @@ namespace WinImageSnap
         public int MaxWaitTime { get; set; }
 
         [NamedArgument('o', "outputFolder", Action = ParseAction.Store,
-            Description = "The output folder (Where snaps are stored).")]
+            Description = "The output folder (where snaps are stored). Defaults to c:\\temp")]
         public string OutputFolder { get; set; }
+
+        [NamedArgument('v', "verbose", Action = ParseAction.StoreTrue,
+            Description = "Add for verbose output.")]
+        public bool Verbose { get; set; }
 
 
     }

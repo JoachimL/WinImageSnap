@@ -18,9 +18,11 @@ namespace WinImageSnap
         private readonly int _maxSleepTime = 2;
         private readonly string _repositoryName = "";
         private readonly string _outputFolder = "C:\\temp";
+        private readonly bool _verbose;
 
         public Snapper(Configuration config)
         {
+            _verbose = config.Verbose;
             if (config.MaxSleepTime > 0)
                 _maxSleepTime = config.MaxSleepTime;
 
@@ -67,6 +69,9 @@ namespace WinImageSnap
             AddTextToBitmap(bitmap);
             if (!Directory.Exists(_outputFolder))
                 Directory.CreateDirectory(_outputFolder);
+            var directory = new DirectoryInfo(_outputFolder);
+            if (_verbose)
+                Console.WriteLine("Putting snaps in {0}", directory.FullName);
             bitmap.Save(Path.Combine(_outputFolder, "snap_" + GetTimestamp() + ".png"), ImageFormat.Png);
         }
 
