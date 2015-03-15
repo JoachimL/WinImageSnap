@@ -45,7 +45,7 @@ namespace WinImageSnap
                 WaitForSnap();
                 _cam.Stop();
             }
-            SaveBitmap(_bitmap);
+            CreateSnap(_bitmap);
         }
 
         private void WaitForSnap()
@@ -64,13 +64,18 @@ namespace WinImageSnap
             _snapped = true;
         }
 
-        private void SaveBitmap(Bitmap bitmap)
+        private void CreateSnap(Bitmap bitmap)
         {
             AddTextToBitmap(bitmap);
-            if (!Directory.Exists(_outputFolder))
-                Directory.CreateDirectory(_outputFolder);
+            CreateDirectoryIfNecessary();
             LogOutputDirectory();
             bitmap.Save(Path.Combine(_outputFolder, "snap_" + GetTimestamp() + ".png"), ImageFormat.Png);
+        }
+
+        private void CreateDirectoryIfNecessary()
+        {
+            if (!Directory.Exists(_outputFolder))
+                Directory.CreateDirectory(_outputFolder);
         }
 
         private void LogOutputDirectory()
