@@ -61,7 +61,7 @@ namespace WinImageSnap
                 {
                     foreach (var webCam in webcams)
                     {
-                        if (((FilterInfo)webCam).MonikerString == preferredCam)
+                        if (((FilterInfo)webCam).Name == preferredCam)
                             device = (FilterInfo)webCam;
                         if (device != null)
                             break;
