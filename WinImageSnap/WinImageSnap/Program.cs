@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using clipr;
+﻿using clipr;
 
 namespace WinImageSnap
 {
