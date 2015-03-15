@@ -12,5 +12,7 @@ namespace WinImageSnap
         public string RepositoryName { get; set; }
 
         public string OutputFolder { get; set; }
+
+        public bool Verbose { get; set; }
     }
 }

@@ -69,12 +69,17 @@ namespace WinImageSnap
             AddTextToBitmap(bitmap);
             if (!Directory.Exists(_outputFolder))
                 Directory.CreateDirectory(_outputFolder);
+            LogOutputDirectory();
+            bitmap.Save(Path.Combine(_outputFolder, "snap_" + GetTimestamp() + ".png"), ImageFormat.Png);
+        }
+
+        private void LogOutputDirectory()
+        {
             if (_verbose)
             {
                 var directory = new DirectoryInfo(_outputFolder);
                 Console.WriteLine("Putting snaps in {0}", directory.FullName);
             }
-            bitmap.Save(Path.Combine(_outputFolder, "snap_" + GetTimestamp() + ".png"), ImageFormat.Png);
         }
 
         private void AddTextToBitmap(Bitmap bitmap)
