@@ -7,12 +7,13 @@ namespace WinImageSnap
         static void Main(string[] args)
         {
             var options = CliParser.Parse<Options>(args);
-            new Snapper(new Configuration()
+            new Snapper(new Configuration
             {
                 MaxSleepTime = options.MaxWaitTime,
                 RepositoryName = options.RepositoryName,
                 OutputFolder = options.OutputFolder,
-                Verbose = options.Verbose
+                Verbose = options.Verbose,
+                CameraNames = options.CameraNames
             }).Snap();
         }
     }
@@ -20,6 +21,10 @@ namespace WinImageSnap
     [ApplicationInfo(Description = "The options for WinImageSnap.")]
     public class Options
     {
+        [NamedArgument('c', "cameraNames", Action = ParseAction.Store,
+            Description = "The device names to use for snapping, in preferred order.")]
+        public string CameraNames { get; set; }
+
         [NamedArgument('r', "repositoryName", Action = ParseAction.Store,
             Description = "The name of the repository.")]
         public string RepositoryName { get; set; }

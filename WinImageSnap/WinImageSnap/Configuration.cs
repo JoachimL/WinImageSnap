@@ -14,5 +14,7 @@ namespace WinImageSnap
         public string OutputFolder { get; set; }
 
         public bool Verbose { get; set; }
+
+        public string CameraNames { get; set; }
     }
 }

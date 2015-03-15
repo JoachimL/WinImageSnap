@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using AForge.Video;
 using AForge.Video.DirectShow;
@@ -19,6 +20,7 @@ namespace WinImageSnap
         private readonly string _repositoryName = "";
         private readonly string _outputFolder = "C:\\temp";
         private readonly bool _verbose;
+        private string[] _cameraNames;
 
         public Snapper(Configuration config)
         {
@@ -31,13 +33,15 @@ namespace WinImageSnap
 
             if (!string.IsNullOrWhiteSpace(config.OutputFolder))
                 _outputFolder = config.OutputFolder;
+
+            if (!string.IsNullOrWhiteSpace(config.CameraNames))
+                _cameraNames = config.CameraNames.Split(new[] { '|' });
         }
 
         internal void Snap()
         {
             var webcams = new FilterInfoCollection(FilterCategory.VideoInputDevice);
-            FilterInfo webcamDevice = webcams[0];
-            _cam = new VideoCaptureDevice(webcamDevice.MonikerString);
+            SetCamera(webcams);
             _cam.NewFrame += CamOnSnapshotFrame;
             while (_bitmap == null)
             {
@@ -46,6 +50,27 @@ namespace WinImageSnap
                 _cam.Stop();
             }
             CreateSnap(_bitmap);
+        }
+
+        private void SetCamera(FilterInfoCollection webcams)
+        {
+            FilterInfo device = null;
+            if (this._cameraNames != null)
+            {
+                foreach (var preferredCam in this._cameraNames)
+                {
+                    foreach (var webCam in webcams)
+                    {
+                        if (((FilterInfo)webCam).MonikerString == preferredCam)
+                            device = (FilterInfo)webCam;
+                        if (device != null)
+                            break;
+                    }
+                }
+            }
+            if (device == null)
+                device = webcams[0];
+            _cam = new VideoCaptureDevice(device.MonikerString);
         }
 
         private void WaitForSnap()
