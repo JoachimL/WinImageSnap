@@ -16,7 +16,6 @@ namespace WinImageSnap
         private Bitmap _bitmap;
         private const int SleepTime = 100;
         private readonly int _maxSleepTime = 2;
-        private readonly string _repositoryName = "";
         private readonly string _outputFolder = "C:\\temp";
         private readonly bool _verbose;
         private readonly string[] _cameraNames;
@@ -28,9 +27,6 @@ namespace WinImageSnap
             _verbose = config.Verbose;
             if (config.MaxWaitTime > 0)
                 _maxSleepTime = config.MaxWaitTime;
-
-            if (!string.IsNullOrWhiteSpace(config.RepositoryName))
-                _repositoryName = config.RepositoryName;
 
             if (!string.IsNullOrWhiteSpace(config.OutputFolder))
                 _outputFolder = config.OutputFolder;
@@ -102,18 +98,18 @@ namespace WinImageSnap
         private void CreateSnap(Bitmap bitmap)
         {
             AddTextToBitmap(bitmap);
-            CreateDirectoryIfNecessary();
-            LogOutputDirectory();
             var outputFolder = _outputFolder;
             if (!string.IsNullOrWhiteSpace(_options.RepositoryName))
-                outputFolder = Path.Combine(outputFolder, _repositoryName);
+                outputFolder = Path.Combine(outputFolder, _options.RepositoryName);
+            CreateDirectoryIfNecessary(outputFolder);
+            LogOutputDirectory();
             bitmap.Save(Path.Combine(outputFolder, "gitsnap_" + GetTimestamp() + ".png"), ImageFormat.Png);
         }
 
-        private void CreateDirectoryIfNecessary()
+        private void CreateDirectoryIfNecessary(string outputFolder)
         {
-            if (!Directory.Exists(_outputFolder))
-                Directory.CreateDirectory(_outputFolder);
+            if (!Directory.Exists(outputFolder))
+                Directory.CreateDirectory(outputFolder);
         }
 
         private void LogOutputDirectory()
@@ -131,8 +127,8 @@ namespace WinImageSnap
             var graphics = Graphics.FromImage(bitmap);
 
             var imageText = "";
-            if (!string.IsNullOrWhiteSpace(_repositoryName))
-                imageText = _repositoryName;
+            if (!string.IsNullOrWhiteSpace(_options.RepositoryName))
+                imageText = _options.RepositoryName;
             if (!string.IsNullOrWhiteSpace(_options.Branch))
                 imageText = string.Concat(imageText, " (", _options.Branch, ")");
 
