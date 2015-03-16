@@ -1,29 +1,22 @@
-﻿using clipr;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using clipr;
 
 namespace WinImageSnap
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            var options = CliParser.Parse<Options>(args);
-            new Snapper(new Configuration
-            {
-                MaxSleepTime = options.MaxWaitTime,
-                RepositoryName = options.RepositoryName,
-                OutputFolder = options.OutputFolder,
-                Verbose = options.Verbose,
-                CameraNames = options.CameraNames
-            }).Snap();
-        }
-    }
-
     [ApplicationInfo(Description = "The options for WinImageSnap.")]
     public class Options
     {
         [NamedArgument('c', "cameraNames", Action = ParseAction.Store,
             Description = "The device names to use for snapping, in preferred order.")]
         public string CameraNames { get; set; }
+
+        [NamedArgument('b', "branch", Action = ParseAction.Store,
+            Description = "The branch name (used for the watermark).")]
+        public string Branch { get; set; }
 
         [NamedArgument('r', "repositoryName", Action = ParseAction.Store,
             Description = "The name of the repository.")]
@@ -41,6 +34,8 @@ namespace WinImageSnap
             Description = "Add for verbose output.")]
         public bool Verbose { get; set; }
 
-
+        [NamedArgument('l', "list", Action = ParseAction.StoreTrue,
+            Description = "List all detected cameras.")]
+        public bool List { get; set; }
     }
 }

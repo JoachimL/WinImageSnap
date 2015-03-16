@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -20,13 +21,15 @@ namespace WinImageSnap
         private readonly string _repositoryName = "";
         private readonly string _outputFolder = "C:\\temp";
         private readonly bool _verbose;
-        private string[] _cameraNames;
+        private readonly string[] _cameraNames;
+        private readonly Options _options;
 
-        public Snapper(Configuration config)
+        public Snapper(Options config)
         {
+            _options = config;
             _verbose = config.Verbose;
-            if (config.MaxSleepTime > 0)
-                _maxSleepTime = config.MaxSleepTime;
+            if (config.MaxWaitTime > 0)
+                _maxSleepTime = config.MaxWaitTime;
 
             if (!string.IsNullOrWhiteSpace(config.RepositoryName))
                 _repositoryName = config.RepositoryName;
@@ -36,6 +39,13 @@ namespace WinImageSnap
 
             if (!string.IsNullOrWhiteSpace(config.CameraNames))
                 _cameraNames = config.CameraNames.Split(new[] { '|' });
+
+        }
+
+        public void ListCameras()
+        {
+            foreach (var camera in new FilterInfoCollection(FilterCategory.VideoInputDevice).Cast<FilterInfo>())
+                Console.WriteLine(camera.Name);
         }
 
         internal void Snap()
@@ -55,9 +65,9 @@ namespace WinImageSnap
         private void SetCamera(FilterInfoCollection webcams)
         {
             FilterInfo device = null;
-            if (this._cameraNames != null)
+            if (_cameraNames != null)
             {
-                foreach (var preferredCam in this._cameraNames)
+                foreach (var preferredCam in _cameraNames)
                 {
                     foreach (var webCam in webcams)
                     {
@@ -66,6 +76,8 @@ namespace WinImageSnap
                         if (device != null)
                             break;
                     }
+                    if (device != null)
+                        break;
                 }
             }
             if (device == null)
@@ -94,7 +106,7 @@ namespace WinImageSnap
             AddTextToBitmap(bitmap);
             CreateDirectoryIfNecessary();
             LogOutputDirectory();
-            bitmap.Save(Path.Combine(_outputFolder, "snap_" + GetTimestamp() + ".png"), ImageFormat.Png);
+            bitmap.Save(Path.Combine(_outputFolder, "gitsnap_" + GetTimestamp() + ".png"), ImageFormat.Png);
         }
 
         private void CreateDirectoryIfNecessary()
@@ -117,11 +129,19 @@ namespace WinImageSnap
             var font = new Font("Courier New", 20, FontStyle.Regular);
             var graphics = Graphics.FromImage(bitmap);
 
+            var imageText = "";
             if (!string.IsNullOrWhiteSpace(_repositoryName))
+                imageText = _repositoryName;
+            if (!string.IsNullOrWhiteSpace(_options.Branch))
+                imageText = string.Concat(imageText, " (", _options.Branch, ")");
+
+            if (!string.IsNullOrWhiteSpace(imageText))
             {
-                SizeF measuredSize = graphics.MeasureString(_repositoryName, font);
-                graphics.DrawString(_repositoryName, font, Brushes.DarkOrange, bitmap.Width - measuredSize.Width, bitmap.Height - measuredSize.Height);
+                SizeF measuredSize = graphics.MeasureString(imageText, font);
+                graphics.DrawString(imageText, font, Brushes.DarkOrange, bitmap.Width - measuredSize.Width,
+                    bitmap.Height - measuredSize.Height);
             }
+
             var timestamp = DateTime.Now.ToString("G");
             graphics.DrawString(timestamp, font, Brushes.DarkOrange, 0, 0);
         }
