@@ -104,7 +104,10 @@ namespace WinImageSnap
             AddTextToBitmap(bitmap);
             CreateDirectoryIfNecessary();
             LogOutputDirectory();
-            bitmap.Save(Path.Combine(_outputFolder, "gitsnap_" + GetTimestamp() + ".png"), ImageFormat.Png);
+            var outputFolder = _outputFolder;
+            if (!string.IsNullOrWhiteSpace(_options.RepositoryName))
+                outputFolder = Path.Combine(outputFolder, _repositoryName);
+            bitmap.Save(Path.Combine(outputFolder, "gitsnap_" + GetTimestamp() + ".png"), ImageFormat.Png);
         }
 
         private void CreateDirectoryIfNecessary()
