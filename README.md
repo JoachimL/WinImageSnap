@@ -13,3 +13,13 @@ I also have winimagesnap "installed"in (xcopyed to) c:\winimagesnap, and my snap
 ```
 /c/WinImageSnap/WinImageSnap.exe -o /c/gitshots -r WinImageSnap -w 2 -v -c "Microsoft LifeCam Studio|HP HD Webcam [Fixed]"
 ```
+
+# Command line parameters
+```
+'c', "cameraNames"	The device (camera) names to use for snapping, in preferred order.
+'r', "repositoryName"	The current repository name
+'w', "maxWaitTime"	The max time to wait for a snap to be taken.
+'o', "outputFolder"	The root output folder. Snaps will be put in repository-named subfolders of this folder.
+'v', "verbose"		Verbose output.
+'l', "list"		A list of the camera winimagesnap can detect. These names can be used with the 'c' argument.
+```
