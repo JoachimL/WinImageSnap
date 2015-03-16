@@ -29,7 +29,7 @@ namespace WinImageSnap
             if (config.MaxWaitTime > 0)
                 _maxSleepTime = config.MaxWaitTime;
 
-            if (!string.IsNullOrWhiteSpace(config.RepositoryName)) 
+            if (!string.IsNullOrWhiteSpace(config.RepositoryName))
                 _repositoryName = config.RepositoryName;
 
             if (!string.IsNullOrWhiteSpace(config.OutputFolder))
